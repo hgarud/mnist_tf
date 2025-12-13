@@ -7,8 +7,11 @@ import tensorflow_datasets as tfds
 
 
 def normalize_img(image: tf.Tensor, label: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
-    """Normalizes images: `uint8` -> `float32`."""
-    return tf.cast(image, tf.float32) / 255., label
+    """Normalizes images: `uint8` -> `float32` and ensures channel dimension."""
+    image = tf.cast(image, tf.float32) / 255.
+    if len(image.shape) == 2:
+        image = tf.expand_dims(image, axis=-1)
+    return image, label
 
 def get_datasets() -> tuple[tf.data.Dataset, tf.data.Dataset, tfds.core.DatasetInfo]:
     (ds_train, ds_test), ds_info = tfds.load(
